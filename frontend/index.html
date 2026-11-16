@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinGuard India — RBI-Powered Banking Health Early Warning System</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0B0F17;
+      color: #E2E8F0;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-hover:hover {
+      border-color: rgba(59, 130, 246, 0.4);
+      background: rgba(23, 32, 51, 0.85);
+    }
+    .zone-safe { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .zone-caution { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .zone-at-risk { background: rgba(249, 115, 22, 0.15); color: #FB923C; border: 1px solid rgba(249, 115, 22, 0.3); }
+    .zone-critical { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0B0F17; }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="border-b border-slate-800 bg-[#0F172A]/90 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold tracking-tight text-white">FinGuard <span class="text-blue-400">India</span></h1>
+            <span class="text-xs px-2 py-0.5 rounded-full font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">10-Year Master Engine (2015–2024)</span>
+          </div>
+          <p class="text-xs text-slate-400">Autonomous Financial Early Warning & Solvency Health Screener • 112+ Banks Indexed</p>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Ribbon -->
+      <div class="flex items-center space-x-4 text-xs">
+        <div class="hidden md:flex items-center space-x-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-400">Dataset Scope:</span>
+          <span class="font-semibold text-white">932 Records (2015–2024)</span>
+        </div>
+        <div class="hidden sm:flex items-center space-x-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+          <i data-lucide="scale" class="w-3.5 h-3.5 text-indigo-400"></i>
+          <span class="text-slate-400">Weights:</span>
+          <span class="font-semibold text-white">8 Ratios (100% Normalized)</span>
+        </div>
+        <a href="/docs" target="_blank" class="flex items-center space-x-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1.5 rounded-lg border border-blue-500/30 transition-colors">
+          <i data-lucide="code" class="w-3.5 h-3.5"></i>
+          <span>Swagger API</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <div class="border-b border-slate-800 bg-[#0B0F17] sticky top-[69px] z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex space-x-1 sm:space-x-4 overflow-x-auto py-2.5 text-sm font-medium" id="nav-tabs">
+        <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white transition-all whitespace-nowrap shadow-sm">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <span>Bank Health Screener</span>
+        </button>
+        <button onclick="switchTab('deepdive')" id="tab-btn-deepdive" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="line-chart" class="w-4 h-4"></i>
+          <span>Bank Deep Dive</span>
+        </button>
+        <button onclick="switchTab('forecast')" id="tab-btn-forecast" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+          <span>Predictive Forecast</span>
+        </button>
+        <button onclick="switchTab('shap')" id="tab-btn-shap" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>SHAP Explainability</span>
+        </button>
+        <button onclick="switchTab('sentiment')" id="tab-btn-sentiment" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="newspaper" class="w-4 h-4"></i>
+          <span>FinBERT News Sentiment</span>
+        </button>
+        <button onclick="switchTab('personal')" id="tab-btn-personal" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="user-check" class="w-4 h-4"></i>
+          <span>Personal Risk Connector</span>
+        </button>
+        <button onclick="switchTab('crises')" id="tab-btn-crises" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="history" class="w-4 h-4"></i>
+          <span>Crisis Validation (18m Early Proof)</span>
+        </button>
+        <button onclick="switchTab('methodology')" id="tab-btn-methodology" class="tab-button flex items-center space-x-2 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all whitespace-nowrap">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>Methodology & SDGs</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- 1. TAB: LEADERBOARD & SCREENER -->
+    <section id="tab-leaderboard" class="space-y-6">
+      
+      <!-- Macro Overview Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Average Health Score</span>
+            <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-white" id="stat-avg-score">--</div>
+          <p class="text-xs text-emerald-400 mt-1 flex items-center"><i data-lucide="arrow-up-right" class="w-3 h-3 mr-0.5"></i> Resilient Solvency</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>System Net NPA</span>
+            <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-emerald-400 font-mono" id="stat-avg-npa">--%</div>
+          <p class="text-xs text-slate-400 mt-1">Multi-year decade low</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Average CAR Buffer</span>
+            <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-white font-mono" id="stat-avg-car">--%</div>
+          <p class="text-xs text-slate-400 mt-1">Well above 11.5% RBI CCB</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Monitored Advances</span>
+            <i data-lucide="wallet" class="w-4 h-4 text-sky-400"></i>
+          </div>
+          <div class="text-xl font-bold text-white font-mono" id="stat-advances">--</div>
+          <p class="text-xs text-slate-400 mt-1">Net customer advances</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Risk Tier Breakdown</span>
+            <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <div class="flex items-center space-x-2 mt-1" id="stat-zone-pills">
+            <span class="text-xs px-2 py-0.5 rounded zone-safe font-bold" id="pill-safe">Safe: --</span>
+            <span class="text-xs px-2 py-0.5 rounded zone-caution font-bold" id="pill-caution">Caution: --</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1.5" id="stat-zone-desc">Distribution across 4 supervisory health tiers</p>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <div class="glass-card p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Financial Year:</span>
+          <select id="year-select-dropdown" onchange="loadLeaderboard(parseInt(this.value))" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500">
+            <option value="2024" selected>FY2024 (Latest)</option>
+            <option value="2023">FY2023</option>
+            <option value="2022">FY2022</option>
+            <option value="2021">FY2021</option>
+            <option value="2020">FY2020 (Covid & Yes Bank Moratorium)</option>
+            <option value="2019">FY2019 (NBFC / IL&FS Spillover)</option>
+            <option value="2018">FY2018 (Peak Bad Loan Cycle)</option>
+            <option value="2017">FY2017</option>
+            <option value="2016">FY2016 (AQR Review)</option>
+            <option value="2015">FY2015</option>
+          </select>
+
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-2">Category:</span>
+          <div class="inline-flex rounded-lg bg-slate-900 p-1 border border-slate-800 text-xs">
+            <button onclick="filterBankType('all')" id="filter-all" class="px-2.5 py-1 rounded-md bg-slate-800 text-white font-semibold transition-all">All</button>
+            <button onclick="filterBankType('psu')" id="filter-psu" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition-all">PSU</button>
+            <button onclick="filterBankType('private')" id="filter-private" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition-all">Private</button>
+            <button onclick="filterBankType('foreign')" id="filter-foreign" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition-all">Foreign</button>
+            <button onclick="filterBankType('sfb')" id="filter-sfb" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition-all">SFBs</button>
+            <button onclick="filterBankType('payments')" id="filter-payments" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition-all">Payments</button>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-400 flex items-center space-x-2">
+          <span>Sort: <strong class="text-white">FinGuard Health Score (0–100)</strong></span>
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-400">Click any bank row for 10-year deep dive</span>
+        </div>
+      </div>
+
+      <!-- Main Leaderboard Table -->
+      <div class="glass-card rounded-xl overflow-hidden border border-slate-800 shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-900/90 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-3.5 px-4 font-semibold w-12 text-center">Rank</th>
+                <th class="py-3.5 px-4 font-semibold">Bank Name</th>
+                <th class="py-3.5 px-4 font-semibold text-center">FinGuard Score</th>
+                <th class="py-3.5 px-4 font-semibold text-center">Health Zone</th>
+                <th class="py-3.5 px-4 font-semibold text-center">Trajectory</th>
+                <th class="py-3.5 px-4 font-semibold text-right">Net NPA</th>
+                <th class="py-3.5 px-4 font-semibold text-right">CAR (CRAR)</th>
+                <th class="py-3.5 px-4 font-semibold text-right">ROA</th>
+                <th class="py-3.5 px-4 font-semibold text-right">NIM</th>
+                <th class="py-3.5 px-4 font-semibold text-right">LCR</th>
+                <th class="py-3.5 px-4 font-semibold text-right">C2I Ratio</th>
+                <th class="py-3.5 px-4 font-semibold text-center">News Sentiment</th>
+                <th class="py-3.5 px-4 font-semibold text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody" class="divide-y divide-slate-800/60 font-sans">
+              <!-- Dynamically populated via JavaScript -->
+              <tr>
+                <td colspan="13" class="py-12 text-center text-slate-500">
+                  <div class="flex justify-center items-center space-x-2">
+                    <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Computing RBI 8-ratio scores across 20 banks...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Score Guide Explainer Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+        <div class="p-3 rounded-lg zone-safe flex items-start space-x-2.5">
+          <i data-lucide="shield-check" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+          <div>
+            <div class="font-bold">Safe (80 to 100)</div>
+            <div class="text-[11px] opacity-80 mt-0.5">High capital buffer, sub-1% Net NPA, resilient 30-day liquidity. Lowest probability of distress.</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-lg zone-caution flex items-start space-x-2.5">
+          <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+          <div>
+            <div class="font-bold">Caution (60 to 79)</div>
+            <div class="text-[11px] opacity-80 mt-0.5">Satisfactory solvency; minor operating cost drag or moderate provisioning requirements.</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-lg zone-at-risk flex items-start space-x-2.5">
+          <i data-lucide="alert-triangle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+          <div>
+            <div class="font-bold">At-Risk (40 to 59)</div>
+            <div class="text-[11px] opacity-80 mt-0.5">Elevated default signals; capital buffer shrinking or persistent asset degradation.</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-lg zone-critical flex items-start space-x-2.5">
+          <i data-lucide="octagon-alert" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+          <div>
+            <div class="font-bold">Critical (0 to 39)</div>
+            <div class="text-[11px] opacity-80 mt-0.5">Severe crisis stage. Precedes RBI moratoriums / prompt corrective action (PCA).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TAB: BANK DEEP DIVE -->
+    <section id="tab-deepdive" class="space-y-6 hidden">
+      <!-- Selector & Overview Header -->
+      <div class="glass-card p-5 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-lg font-mono" id="detail-bank-avatar">
+            SBI
+          </div>
+          <div>
+            <div class="flex items-center space-x-3">
+              <h2 class="text-xl font-bold text-white" id="detail-bank-name">State Bank of India</h2>
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-mono bg-slate-800 text-slate-300 border border-slate-700" id="detail-bank-type">Public Sector (PSU)</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5" id="detail-summary-text">Standalone RBI DBIE Banking Dataset • Evaluation as on 31 March (FY25)</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <label class="text-xs text-slate-400 font-medium">Select Bank:</label>
+          <select id="bank-selector" onchange="selectBank(this.value)" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Core Score & Trajectory Hero Banner -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Score Card -->
+        <div class="glass-card p-6 rounded-xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">FinGuard Composite Score (FY25)</div>
+            <div class="flex items-baseline space-x-3">
+              <span class="text-5xl font-black text-white font-mono tracking-tight" id="detail-score">--</span>
+              <span class="text-lg text-slate-500 font-medium">/ 100</span>
+            </div>
+            <div class="mt-3">
+              <span class="text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider" id="detail-zone-badge">Safe</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-4 leading-relaxed" id="detail-score-explanation">
+              Evaluating...
+            </p>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-800">
+            <div class="text-xs text-slate-400 font-semibold mb-1">Multi-Year Trajectory:</div>
+            <div class="flex items-center space-x-2" id="detail-trajectory-container">
+              <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+              <span class="text-sm font-semibold text-emerald-400" id="detail-trajectory-label">Improving</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1" id="detail-trajectory-desc">Annual slope analysis</p>
+          </div>
+        </div>
+
+        <!-- 4-Year Trend Chart -->
+        <div class="glass-card p-6 rounded-xl border border-slate-800 lg:col-span-2 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+                <span>4-Year FinGuard Health Trajectory (FY22 – FY25)</span>
+              </h3>
+              <p class="text-xs text-slate-400">Tracked with regulatory threshold bands</p>
+            </div>
+            <div class="flex items-center space-x-2 text-xs">
+              <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              <span class="text-slate-300">Historical Health Score</span>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[220px]">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- The 8 Financial Ratios Breakdown Cards -->
+      <div>
+        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center space-x-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-blue-400"></i>
+          <span>The 8 RBI-Mandated Solvency Ratios (FY25 Values & Regulatory Limits)</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="ratios-grid">
+          <!-- Dynamically populated 8 ratio cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. TAB: PREDICTIVE FORECASTING -->
+    <section id="tab-forecast" class="space-y-6 hidden">
+      <div class="glass-card p-6 rounded-xl border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i data-lucide="trending-up" class="w-5 h-5 text-indigo-400"></i>
+              <span>Predictive Score Forecasting (FY26 & FY27)</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Forward mathematical extrapolation of fundamental health score trajectory based on audited RBI metrics.
+            </p>
+          </div>
+          <div class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono">
+            Feature 3 • Early Warning Engine
+          </div>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="mt-4 p-4 rounded-xl border" id="forecast-alert-box">
+          <!-- Dynamic alert msg -->
+        </div>
+
+        <!-- Forecast Chart & Extrapolation Table -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          <div class="lg:col-span-2">
+            <div class="relative min-h-[280px]">
+              <canvas id="forecastChart"></canvas>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Forecast Trajectory Schedule</h4>
+            <div class="space-y-2.5" id="forecast-timeline-list">
+              <!-- Dynamically populated -->
+            </div>
+
+            <div class="p-3.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+              <strong class="text-slate-300">Regulatory Disclaimer:</strong> This projection is a fundamental mathematical extrapolation of the bank's own internal financial health score. It is <span class="text-amber-400">NOT a stock price prediction</span> and does not incorporate equity market fluctuations.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. TAB: SHAP EXPLAINABILITY -->
+    <section id="tab-shap" class="space-y-6 hidden">
+      <div class="glass-card p-6 rounded-xl border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+              <span>Tree SHAP Feature Attribution & Waterfall Breakdown</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Deconstructs why the bank scored what it scored: exact points pushed up (+) or dragged down (-) by each ratio.
+            </p>
+          </div>
+          <div class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono">
+            Feature 4 • Explainable AI (XAI)
+          </div>
+        </div>
+
+        <!-- Plain Language Hero Summary -->
+        <div class="mt-4 p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-sm leading-relaxed text-slate-200" id="shap-summary-box">
+          Loading explanation...
+        </div>
+
+        <!-- "The One Number to Watch" Highlighting -->
+        <div class="mt-4 p-4 rounded-xl bg-gradient-to-r from-red-950/40 to-slate-900/80 border border-red-500/30 flex items-start space-x-3.5">
+          <div class="p-2 rounded-lg bg-red-500/20 text-red-400 flex-shrink-0">
+            <i data-lucide="crosshair" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider">The One Number To Watch (Single Biggest Vulnerability)</h4>
+            <div class="text-sm font-semibold text-white mt-1" id="shap-watch-metric-title">--</div>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed" id="shap-watch-metric-desc">--</p>
+          </div>
+        </div>
+
+        <!-- Attribution Chart & Table -->
+        <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">SHAP Waterfall Bar Chart (Points Added / Subtracted)</h4>
+            <div class="relative min-h-[300px]">
+              <canvas id="shapChart"></canvas>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Feature Contribution Breakdown</h4>
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Metric</th>
+                  <th class="py-2.5 px-3 text-right">Value</th>
+                  <th class="py-2.5 px-3 text-right">Impact</th>
+                  <th class="py-2.5 px-3">Explanation</th>
+                </tr>
+              </thead>
+              <tbody id="shap-table-body" class="divide-y divide-slate-800">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. TAB: FINBERT NEWS & GOVERNANCE -->
+    <section id="tab-sentiment" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: News Sentiment Overview & Dual Matrix -->
+        <div class="glass-card p-6 rounded-xl border border-slate-800 space-y-5">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center space-x-2">
+              <i data-lucide="newspaper" class="w-4 h-4 text-blue-400"></i>
+              <span>Governance & Sentiment Engine</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Catches executive departures, regulatory curbs, and ethical probes that balance sheet numbers miss.
+            </p>
+          </div>
+
+          <!-- Dual Signal Matrix Box -->
+          <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/80" id="dual-matrix-box">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Dual-Signal Risk Matrix</div>
+            <div class="text-base font-bold text-white flex items-center space-x-2" id="dual-matrix-quadrant">
+              <span>Checking...</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed" id="dual-matrix-guidance">
+              --
+            </p>
+          </div>
+
+          <!-- Real-Time Headline FinBERT Tester -->
+          <div class="pt-4 border-t border-slate-800">
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+              <i data-lucide="bot" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span>Test Any Live News Headline</span>
+            </h4>
+            <div class="space-y-2">
+              <input type="text" id="custom-headline-input" placeholder="e.g. RBI slaps ₹2 crore fine on bank for compliance lapses" class="w-full bg-slate-900 border border-slate-700 text-xs text-white rounded-lg p-2.5 focus:outline-none focus:border-blue-500">
+              <button onclick="testHeadlineSentiment()" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5">
+                <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+                <span>Classify with FinBERT</span>
+              </button>
+            </div>
+            <div id="headline-test-result" class="mt-3 hidden p-3 rounded-lg text-xs border">
+              <!-- Result -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Bank Specific News Feed -->
+        <div class="glass-card p-6 rounded-xl border border-slate-800 lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+              <i data-lucide="rss" class="w-4 h-4 text-emerald-400"></i>
+              <span>Audited News Feed for <span id="news-bank-label">State Bank of India</span></span>
+            </h3>
+            <span class="text-xs text-slate-400 font-mono" id="news-sentiment-badge">Overall: Positive</span>
+          </div>
+
+          <div class="space-y-3" id="bank-news-list">
+            <!-- Dynamically populated headlines -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. TAB: PERSONAL INVESTMENT RISK CONNECTOR -->
+    <section id="tab-personal" class="space-y-6 hidden">
+      <div class="glass-card p-6 rounded-xl border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i data-lucide="user-check" class="w-5 h-5 text-emerald-400"></i>
+              <span>Personal Investment Risk Connector</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Feature 6: Answers the question every retail investor actually has: <span class="text-emerald-400 font-medium">"What does this bank's financial health mean for MY money?"</span>
+            </p>
+          </div>
+          <div class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono">
+            Feature 6 • Statutory DICGC & Retail Exposure
+          </div>
+        </div>
+
+        <!-- Interactive Calculator Inputs -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div>
+            <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1.5">Select Bank</label>
+            <select id="personal-bank-select" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 text-xs focus:outline-none focus:border-blue-500">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1.5">Holding Category</label>
+            <select id="personal-holding-type" onchange="toggleHoldingInputs(this.value)" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 text-xs focus:outline-none focus:border-blue-500">
+              <option value="fd">Fixed Deposit / Savings (DICGC Protected)</option>
+              <option value="equity">Equity Shares (Stock Holding)</option>
+            </select>
+          </div>
+
+          <div id="container-fd-input">
+            <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1.5">Total Deposit Amount (₹)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 font-mono text-xs">₹</span>
+              <input type="number" id="personal-fd-amount" value="300000" step="50000" class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-7 pr-3 py-2 text-xs font-mono focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="flex space-x-1.5 mt-1.5 text-[10px]">
+              <button onclick="setFdAmount(100000)" class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 hover:bg-slate-600">₹1 Lakh</button>
+              <button onclick="setFdAmount(500000)" class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/40">₹5 Lakh (Limit)</button>
+              <button onclick="setFdAmount(1200000)" class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 hover:bg-slate-600">₹12 Lakhs</button>
+            </div>
+          </div>
+
+          <div id="container-equity-input" class="hidden">
+            <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1.5">Shares Count & Purchase Price</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" id="personal-shares-count" value="500" placeholder="Qty" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-2 text-xs font-mono">
+              <input type="number" id="personal-buy-price" value="150" placeholder="Buy Price (₹)" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-2 text-xs font-mono">
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <button onclick="calculatePersonalRisk()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center space-x-2 shadow-lg shadow-emerald-600/20">
+            <i data-lucide="calculator" class="w-4 h-4"></i>
+            <span>Calculate Personal Exposure & Protection</span>
+          </button>
+        </div>
+
+        <!-- 3 Output Cards as defined in scope doc -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5" id="personal-results-container">
+          <!-- Output 1: Insurance Coverage -->
+          <div class="p-5 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Output 1 • Insurance Coverage</span>
+                <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <div class="mt-2 text-xs px-2.5 py-1 rounded font-bold inline-block" id="personal-output1-badge">
+                Loading...
+              </div>
+              <p class="text-xs text-slate-300 mt-3 leading-relaxed" id="personal-output1-text">
+                Calculating...
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-500 font-mono">
+              Statutory Limit: ₹5,00,000 per depositor
+            </div>
+          </div>
+
+          <!-- Output 2: The One Number to Watch -->
+          <div class="p-5 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Output 2 • One Number to Watch</span>
+                <i data-lucide="crosshair" class="w-4 h-4 text-amber-400"></i>
+              </div>
+              <p class="text-xs text-slate-300 mt-2 leading-relaxed" id="personal-output2-text">
+                Calculating...
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-amber-400/80">
+              Alert Trigger: Early warning milestone
+            </div>
+          </div>
+
+          <!-- Output 3: What a score drop means for you -->
+          <div class="p-5 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Output 3 • Score Drop Action Plan</span>
+                <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-400"></i>
+              </div>
+              <p class="text-xs text-slate-300 mt-2 leading-relaxed" id="personal-output3-text">
+                Calculating...
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-500">
+              Actionable retail decision support
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. TAB: HISTORICAL CRISIS VALIDATION -->
+    <section id="tab-crises" class="space-y-6 hidden">
+      <div class="glass-card p-6 rounded-xl border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i data-lucide="history" class="w-5 h-5 text-rose-400"></i>
+              <span>Empirical Crisis Validation Layer (12 to 18-Month Early Warning Proof)</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Retrospectively validates FinGuard on 4 real Indian financial collapses: Yes Bank, PMC Bank, IL&FS, and DHFL.
+            </p>
+          </div>
+          <div class="text-xs px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono">
+            Feature 7 • Empirical Proof
+          </div>
+        </div>
+
+        <!-- Crisis Entity Selector Pills -->
+        <div class="flex flex-wrap gap-2.5 mt-5" id="crisis-pills-container">
+          <button onclick="loadCrisisDetail('YES_BANK')" id="crisis-btn-YES_BANK" class="crisis-pill px-4 py-2 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center space-x-2 shadow-lg shadow-rose-600/20">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            <span>Yes Bank (18m Lead Time)</span>
+          </button>
+          <button onclick="loadCrisisDetail('PMC_BANK')" id="crisis-btn-PMC_BANK" class="crisis-pill px-4 py-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white font-semibold text-xs flex items-center space-x-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+            <span>PMC Bank (15m Lead Time)</span>
+          </button>
+          <button onclick="loadCrisisDetail('ILFS')" id="crisis-btn-ILFS" class="crisis-pill px-4 py-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white font-semibold text-xs flex items-center space-x-2">
+            <i data-lucide="trending-down" class="w-4 h-4"></i>
+            <span>IL&FS (16m Lead Time)</span>
+          </button>
+          <button onclick="loadCrisisDetail('DHFL')" id="crisis-btn-DHFL" class="crisis-pill px-4 py-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white font-semibold text-xs flex items-center space-x-2">
+            <i data-lucide="file-warning" class="w-4 h-4"></i>
+            <span>DHFL (14m Lead Time)</span>
+          </button>
+        </div>
+
+        <!-- Crisis Detail View -->
+        <div class="mt-6 space-y-6" id="crisis-detail-view">
+          <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800" id="crisis-summary-banner">
+            <!-- Dynamic crisis summary -->
+          </div>
+
+          <!-- Timeline decay table -->
+          <div class="glass-card rounded-xl overflow-hidden border border-slate-800">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="py-3 px-4">Period</th>
+                    <th class="py-3 px-4 text-center">FinGuard Score</th>
+                    <th class="py-3 px-4 text-center">Zone</th>
+                    <th class="py-3 px-4 text-right">Net NPA</th>
+                    <th class="py-3 px-4 text-right">Gross NPA</th>
+                    <th class="py-3 px-4 text-right">CAR Buffer</th>
+                    <th class="py-3 px-4 text-right">ROA</th>
+                    <th class="py-3 px-4">Early Warning Detection Alert</th>
+                  </tr>
+                </thead>
+                <tbody id="crisis-timeline-tbody" class="divide-y divide-slate-800">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. TAB: METHODOLOGY & SDG MAPPING -->
+    <section id="tab-methodology" class="space-y-6 hidden">
+      <div class="glass-card p-6 rounded-xl border border-slate-800 space-y-6">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+            <i data-lucide="book-open" class="w-5 h-5 text-blue-400"></i>
+            <span>FinGuard Architectural Methodology & SDG Mapping</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Built on RBI DBIE statistical tables, Basel III prudential standards, and CRISIL CRAMEL credit frameworks.
+          </p>
+        </div>
+
+        <!-- Weights & Formulas Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+            <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">The 8 Ratio Composite Weighting Matrix</h4>
+            <ul class="text-xs space-y-2 text-slate-300">
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>1. Net NPA Ratio (Asset Quality)</span>
+                <span class="font-mono font-bold text-white">Weight: 25%</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>2. Capital Adequacy (CAR / CRAR)</span>
+                <span class="font-mono font-bold text-white">Weight: 20%</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>3. Return on Assets (ROA Profitability)</span>
+                <span class="font-mono font-bold text-white">Weight: 15%</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>4. Net Interest Margin (NIM)</span>
+                <span class="font-mono font-bold text-white">Weight: 10%</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>5. Liquidity Coverage Ratio (LCR 30-Day Survival)</span>
+                <span class="font-mono font-bold text-white">Weight: 10%</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>6. Cost-to-Income (Operating Efficiency)</span>
+                <span class="font-mono font-bold text-white">Weight: 10%</span>
+              </li>
+              <li class="flex justify-between border-b border-slate-800/80 pb-1.5">
+                <span>7. Debt-to-Equity (Wholesale Leverage)</span>
+                <span class="font-mono font-bold text-white">Weight: 5%</span>
+              </li>
+              <li class="flex justify-between pb-1">
+                <span>8. Provision Coverage Ratio (PCR Loss Cushion)</span>
+                <span class="font-mono font-bold text-white">Weight: 5%</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">United Nations SDG Alignment</h4>
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+                <strong class="text-white">SDG 10 (Target 10.2): Reduced Inequalities</strong>
+                <p class="text-[11px] text-slate-400 mt-0.5">Democratizes institutional-grade bank safety screening for 80M+ retail investors completely free of charge.</p>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+                <strong class="text-white">SDG 8 (Target 8.10): Decent Work & Economic Growth</strong>
+                <p class="text-[11px] text-slate-400 mt-0.5">Prevents catastrophic retail wealth erosion events by giving 12-18 month early warnings.</p>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+                <strong class="text-white">SDG 16 (Target 16.6): Strong & Transparent Institutions</strong>
+                <p class="text-[11px] text-slate-400 mt-0.5">Translates dense central bank spreadsheets into accessible, explainable solvency scores.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-[#0F172A] py-6 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span class="font-bold text-slate-400">FinGuard India Project</span> • RBI Data Analytics FY22–FY25 • Standalone Bank-Level DBIE Pipeline
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>Statutory DICGC Guarantee: ₹5 Lakhs</span>
+        <span>•</span>
+        <a href="/docs" class="text-blue-400 hover:underline">API Documentation</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CLIENT-SIDE SCRIPT -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
+

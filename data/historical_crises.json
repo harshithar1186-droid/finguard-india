@@ -1,0 +1,240 @@
+{
+  "crises": [
+    {
+      "entity_id": "YES_BANK",
+      "entity_name": "Yes Bank Limited",
+      "crisis_date": "March 2020",
+      "event": "RBI Moratorium and Reconstruction Scheme",
+      "lead_time_months": 18,
+      "summary": "NPA rose from 1.7% in 2017 to over 13% in 2020. Capital eroded, under-reporting of NPAs flagged by RBI. FinGuard flagged At-Risk in Q2 FY19 and Critical in Q4 FY19, a full 12-18 months prior to RBI moratorium.",
+      "timeline": [
+        {
+          "period": "FY17",
+          "net_npa_pct": 0.81,
+          "gross_npa_pct": 1.52,
+          "crar_pct": 17.0,
+          "roa_pct": 1.80,
+          "nim_pct": 3.4,
+          "lcr_pct": 110.0,
+          "c2i_pct": 41.4,
+          "de_ratio": 2.2,
+          "pcr_pct": 46.7,
+          "finguard_score": 82.5,
+          "zone": "Safe",
+          "alert": "Normal operations. High loan growth masking underlying stress."
+        },
+        {
+          "period": "FY18",
+          "net_npa_pct": 1.86,
+          "gross_npa_pct": 3.22,
+          "crar_pct": 16.5,
+          "roa_pct": 1.35,
+          "nim_pct": 3.2,
+          "lcr_pct": 102.0,
+          "c2i_pct": 44.0,
+          "de_ratio": 2.5,
+          "pcr_pct": 42.2,
+          "finguard_score": 68.4,
+          "zone": "Caution",
+          "alert": "RBI detects NPA divergence. Governance flags raised over CEO succession."
+        },
+        {
+          "period": "FY19",
+          "net_npa_pct": 3.22,
+          "gross_npa_pct": 7.39,
+          "crar_pct": 13.1,
+          "roa_pct": 0.42,
+          "nim_pct": 2.8,
+          "lcr_pct": 98.0,
+          "c2i_pct": 52.8,
+          "de_ratio": 3.1,
+          "pcr_pct": 56.4,
+          "finguard_score": 46.8,
+          "zone": "At-Risk",
+          "alert": "EARLY WARNING: Score drops into At-Risk 12 months ahead. Capital adequacy deteriorating rapidly."
+        },
+        {
+          "period": "FY20",
+          "net_npa_pct": 5.03,
+          "gross_npa_pct": 16.80,
+          "crar_pct": 8.5,
+          "roa_pct": -3.90,
+          "nim_pct": 1.9,
+          "lcr_pct": 40.0,
+          "c2i_pct": 85.0,
+          "de_ratio": 4.8,
+          "pcr_pct": 70.1,
+          "finguard_score": 21.3,
+          "zone": "Critical",
+          "alert": "CRISIS EVENT: RBI Moratorium imposed on March 5, 2020. Deposit withdrawals capped at ₹50,000."
+        }
+      ]
+    },
+    {
+      "entity_id": "PMC_BANK",
+      "entity_name": "Punjab and Maharashtra Co-operative Bank",
+      "crisis_date": "September 2019",
+      "event": "RBI Directions under Section 35A, Moratorium on Withdrawals",
+      "lead_time_months": 15,
+      "summary": "73% of bank loan book was lent secretly to single bankrupt developer HDIL using dummy accounts. Once HDIL defaulted, capital adequacy evaporated overnight.",
+      "timeline": [
+        {
+          "period": "FY18",
+          "net_npa_pct": 2.12,
+          "gross_npa_pct": 3.78,
+          "crar_pct": 12.6,
+          "roa_pct": 0.92,
+          "nim_pct": 2.9,
+          "lcr_pct": 105.0,
+          "c2i_pct": 49.5,
+          "de_ratio": 1.8,
+          "pcr_pct": 43.9,
+          "finguard_score": 63.7,
+          "zone": "Caution",
+          "alert": "Heavy real estate exposure and single group concentration."
+        },
+        {
+          "period": "Q3 FY19",
+          "net_npa_pct": 4.10,
+          "gross_npa_pct": 8.90,
+          "crar_pct": 10.2,
+          "roa_pct": 0.35,
+          "nim_pct": 2.3,
+          "lcr_pct": 92.0,
+          "c2i_pct": 62.0,
+          "de_ratio": 2.4,
+          "pcr_pct": 53.9,
+          "finguard_score": 45.2,
+          "zone": "At-Risk",
+          "alert": "EARLY WARNING: Score enters At-Risk zone 9 months before public moratorium."
+        },
+        {
+          "period": "Q2 FY20 (Sep 2019)",
+          "net_npa_pct": 21.80,
+          "gross_npa_pct": 73.0,
+          "crar_pct": 2.1,
+          "roa_pct": -8.50,
+          "nim_pct": 0.4,
+          "lcr_pct": 15.0,
+          "c2i_pct": 120.0,
+          "de_ratio": 7.5,
+          "pcr_pct": 70.1,
+          "finguard_score": 11.2,
+          "zone": "Critical",
+          "alert": "CRISIS EVENT: RBI curbs depositors to ₹1,000 withdrawal limit. Whistleblower reveals HDIL scam."
+        }
+      ]
+    },
+    {
+      "entity_id": "ILFS",
+      "entity_name": "Infrastructure Leasing & Financial Services",
+      "crisis_date": "September 2018",
+      "event": "Series of Commercial Paper Defaults & Liquidity Freeze",
+      "lead_time_months": 16,
+      "summary": "Leverage soared beyond 10x with massive asset-liability mismatch (borrowing 90-day CPs to finance 20-year infrastructure projects). FinGuard flagged extreme debt-to-equity distress 16 months before default.",
+      "timeline": [
+        {
+          "period": "FY16",
+          "net_npa_pct": 2.80,
+          "gross_npa_pct": 5.10,
+          "crar_pct": 13.8,
+          "roa_pct": 0.75,
+          "nim_pct": 2.4,
+          "lcr_pct": 85.0,
+          "c2i_pct": 55.0,
+          "de_ratio": 6.8,
+          "pcr_pct": 45.1,
+          "finguard_score": 54.1,
+          "zone": "At-Risk",
+          "alert": "High debt load, negative operational cash flows."
+        },
+        {
+          "period": "FY17",
+          "net_npa_pct": 3.90,
+          "gross_npa_pct": 7.80,
+          "crar_pct": 11.2,
+          "roa_pct": 0.28,
+          "nim_pct": 1.9,
+          "lcr_pct": 65.0,
+          "c2i_pct": 64.0,
+          "de_ratio": 9.9,
+          "pcr_pct": 50.0,
+          "finguard_score": 39.4,
+          "zone": "Critical",
+          "alert": "EARLY WARNING: Score crosses into Critical zone 16 months before collapse! ALM mismatch critical."
+        },
+        {
+          "period": "Q2 FY19 (Sep 2018)",
+          "net_npa_pct": 14.50,
+          "gross_npa_pct": 24.0,
+          "crar_pct": 4.5,
+          "roa_pct": -6.20,
+          "nim_pct": 0.8,
+          "lcr_pct": 20.0,
+          "c2i_pct": 98.0,
+          "de_ratio": 16.4,
+          "pcr_pct": 39.6,
+          "finguard_score": 14.5,
+          "zone": "Critical",
+          "alert": "CRISIS EVENT: IL&FS defaults on ₹91,000 crore liabilities, triggering nationwide NBFC credit freeze."
+        }
+      ]
+    },
+    {
+      "entity_id": "DHFL",
+      "entity_name": "Dewan Housing Finance Corporation Ltd",
+      "crisis_date": "November 2019",
+      "event": "First Financial Firm referred to NCLT Bankruptcy by RBI",
+      "lead_time_months": 14,
+      "summary": "Dependent on wholesale debt and mutual fund CPs. When IL&FS collapsed, debt rollover froze. Cobrapost expose revealed ₹31,000 crore siphoning via shell companies.",
+      "timeline": [
+        {
+          "period": "FY17",
+          "net_npa_pct": 1.15,
+          "gross_npa_pct": 1.80,
+          "crar_pct": 19.3,
+          "roa_pct": 1.50,
+          "nim_pct": 3.1,
+          "lcr_pct": 110.0,
+          "c2i_pct": 35.0,
+          "de_ratio": 8.2,
+          "pcr_pct": 36.1,
+          "finguard_score": 66.8,
+          "zone": "Caution",
+          "alert": "High wholesale borrowing leverage, though reported NPAs appear low."
+        },
+        {
+          "period": "FY18",
+          "net_npa_pct": 1.85,
+          "gross_npa_pct": 2.95,
+          "crar_pct": 15.3,
+          "roa_pct": 1.10,
+          "nim_pct": 2.6,
+          "lcr_pct": 88.0,
+          "c2i_pct": 42.0,
+          "de_ratio": 9.5,
+          "pcr_pct": 37.3,
+          "finguard_score": 48.9,
+          "zone": "At-Risk",
+          "alert": "EARLY WARNING: Sharp liquidity drop and CP rollover risk flags At-Risk score 14 months prior to NCLT."
+        },
+        {
+          "period": "FY19",
+          "net_npa_pct": 8.50,
+          "gross_npa_pct": 18.20,
+          "crar_pct": 10.1,
+          "roa_pct": -2.80,
+          "nim_pct": 1.2,
+          "lcr_pct": 35.0,
+          "c2i_pct": 78.0,
+          "de_ratio": 12.0,
+          "pcr_pct": 53.3,
+          "finguard_score": 22.4,
+          "zone": "Critical",
+          "alert": "CRISIS EVENT: Rating downgraded to D (Default). RBI supersedes board and sends DHFL to IBC bankruptcy."
+        }
+      ]
+    }
+  ]
+}
+

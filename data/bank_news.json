@@ -1,0 +1,192 @@
+{
+  "news_items": [
+    {
+      "bank_id": "HDFC",
+      "headline": "HDFC Bank Chairman resigned citing board governance concerns; stock faces sharp volatility",
+      "source": "Business Standard",
+      "date": "2026-03-12",
+      "category": "Governance",
+      "finbert_sentiment": "Negative",
+      "sentiment_score": -0.88,
+      "governance_flag": true,
+      "summary": "Sudden leadership exit triggers governance inquiries despite strong underlying balance sheet metrics."
+    },
+    {
+      "bank_id": "HDFC",
+      "headline": "HDFC Bank completes technology infrastructure overhaul following RBI guidance",
+      "source": "Mint",
+      "date": "2026-02-18",
+      "category": "Regulatory",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.74,
+      "governance_flag": false,
+      "summary": "Core IT systems upgraded and regulatory compliance clearance received."
+    },
+    {
+      "bank_id": "HDFC",
+      "headline": "RBI approves expansion of 400 rural branches for HDFC Bank",
+      "source": "Economic Times",
+      "date": "2026-01-25",
+      "category": "Operational",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.82,
+      "governance_flag": false,
+      "summary": "Branch network expansion permitted to deepen deposit franchise."
+    },
+    {
+      "bank_id": "SBI",
+      "headline": "State Bank of India posts historic net profit of ₹70,900 crore as bad loans drop below 2%",
+      "source": "Economic Times",
+      "date": "2025-05-18",
+      "category": "Earnings",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.94,
+      "governance_flag": false,
+      "summary": "Record annual profitability driven by robust credit growth and multi-year low provisions."
+    },
+    {
+      "bank_id": "SBI",
+      "headline": "RBI monitors systemic liquidity as SBI expands advances book beyond ₹41 lakh crore",
+      "source": "Reuters",
+      "date": "2025-07-10",
+      "category": "Regulatory",
+      "finbert_sentiment": "Neutral",
+      "sentiment_score": 0.05,
+      "governance_flag": false,
+      "summary": "Central bank keeps close watch on credit-deposit ratio across domestic system."
+    },
+    {
+      "bank_id": "ICICI",
+      "headline": "ICICI Bank demonstrates pristine asset quality with Net NPA at 0.42% and ROA above 2.2%",
+      "source": "Bloomberg",
+      "date": "2025-06-02",
+      "category": "Earnings",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.92,
+      "governance_flag": false,
+      "summary": "Market-leading profitability metrics affirmed by global credit rating agencies."
+    },
+    {
+      "bank_id": "ICICI",
+      "headline": "ICICI Bank CEO reappointed with full regulatory and shareholder assent",
+      "source": "Financial Express",
+      "date": "2025-08-14",
+      "category": "Governance",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.81,
+      "governance_flag": false,
+      "summary": "Seamless executive leadership continuity supports long-term strategic execution."
+    },
+    {
+      "bank_id": "AXIS",
+      "headline": "Axis Bank completes Citi retail integration smoothly, unlocks ₹1,200 crore synergy benefits",
+      "source": "Mint",
+      "date": "2025-04-20",
+      "category": "Strategic",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.85,
+      "governance_flag": false,
+      "summary": "Integration hurdles behind as high-yield card and wealth portfolios drive margins."
+    },
+    {
+      "bank_id": "KOTAK",
+      "headline": "Kotak Mahindra Bank capital adequacy stays fortress-like at 22.25% with zero net distress",
+      "source": "Business Standard",
+      "date": "2025-06-15",
+      "category": "Financial",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.89,
+      "governance_flag": false,
+      "summary": "Bank maintains highest capital buffer among Tier-1 private commercial lenders."
+    },
+    {
+      "bank_id": "KOTAK",
+      "headline": "RBI lifts regulatory curbs on Kotak Mahindra Bank online customer onboarding after audit",
+      "source": "Economic Times",
+      "date": "2025-03-30",
+      "category": "Regulatory",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.88,
+      "governance_flag": false,
+      "summary": "Central bank satisfies itself with core banking technological remediation."
+    },
+    {
+      "bank_id": "YES",
+      "headline": "Yes Bank recoveries surge past expectations; Japanese SMBC group eyes strategic equity stake",
+      "source": "Bloomberg",
+      "date": "2025-09-04",
+      "category": "Strategic",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.77,
+      "governance_flag": false,
+      "summary": "Post-reconstruction turnaround gains momentum as legacy stressed assets wind down."
+    },
+    {
+      "bank_id": "YES",
+      "headline": "SEBI concludes past promoter litigation proceedings in Yes Bank legacy AT1 bond matter",
+      "source": "Reuters",
+      "date": "2025-02-12",
+      "category": "Legal",
+      "finbert_sentiment": "Neutral",
+      "sentiment_score": 0.12,
+      "governance_flag": true,
+      "summary": "Legacy disputes nearing judicial resolution reduces headline litigation risks."
+    },
+    {
+      "bank_id": "PNB",
+      "headline": "Punjab National Bank Net NPA shrinks to 0.40%, registers 102% YoY jump in annual net profit",
+      "source": "Press Trust of India",
+      "date": "2025-05-22",
+      "category": "Earnings",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.91,
+      "governance_flag": false,
+      "summary": "PSU turnaround narrative strengthened as legacy bad loan recoveries peak."
+    },
+    {
+      "bank_id": "BOB",
+      "headline": "Bank of Baroda global advances cross ₹12 lakh crore with stable Net Interest Margin",
+      "source": "Hindu BusinessLine",
+      "date": "2025-06-11",
+      "category": "Financial",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.83,
+      "governance_flag": false,
+      "summary": "Robust corporate loan demand and international book driving earnings growth."
+    },
+    {
+      "bank_id": "IDFC",
+      "headline": "IDFC First Bank capital adequacy at 15.48% as retail deposit base widens to ₹2.5 lakh crore",
+      "source": "Moneycontrol",
+      "date": "2025-05-19",
+      "category": "Financial",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.76,
+      "governance_flag": false,
+      "summary": "Retail-focused deposit franchise generates steady low-cost CASA expansion."
+    },
+    {
+      "bank_id": "INDUS",
+      "headline": "IndusInd Bank reports Net NPA rise to 0.95% on microfinance stress, increases contingency buffers",
+      "source": "LiveMint",
+      "date": "2025-04-28",
+      "category": "Asset Quality",
+      "finbert_sentiment": "Cautionary",
+      "sentiment_score": -0.38,
+      "governance_flag": false,
+      "summary": "Unsecured credit slippages trigger elevated provision requirements in consumer lending segment."
+    },
+    {
+      "bank_id": "BOM",
+      "headline": "Bank of Maharashtra leads all PSU lenders in credit growth and low Net NPA ratio",
+      "source": "Financial Express",
+      "date": "2025-06-08",
+      "category": "Earnings",
+      "finbert_sentiment": "Positive",
+      "sentiment_score": 0.93,
+      "governance_flag": false,
+      "summary": "Strong operational efficiency and lowest NPA level among state-run commercial banks."
+    }
+  ]
+}
+
